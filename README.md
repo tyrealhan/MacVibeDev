@@ -4,6 +4,21 @@
 
 脚本入口是 [setup-macos-dev.sh](./setup-macos-dev.sh)。它会按“先检查、后安装、再配置”的方式处理常用开发环境，并且可以重复执行。
 
+## Quick Install
+
+直接执行：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tyrealhan/MacVibeDev/main/setup-macos-dev.sh | bash
+```
+
+执行完成后，重新打开一个终端窗口，或者手动加载配置：
+
+```bash
+source ~/.zprofile
+source ~/.zshrc
+```
+
 ## Features
 
 - 安装并初始化 Homebrew
@@ -127,21 +142,6 @@ keybind = ctrl+`=toggle_quick_terminal
 - `curl`
 - `ruby`
 - 网络可访问 Homebrew、GitHub 和相关下载源
-
-## Usage
-
-克隆仓库后直接执行：
-
-```bash
-bash ./setup-macos-dev.sh
-```
-
-执行完成后，重新打开一个终端窗口，或者手动加载配置：
-
-```bash
-source ~/.zprofile
-source ~/.zshrc
-```
 
 ## Idempotency
 
