@@ -240,6 +240,27 @@ else
   text = "#{text.rstrip}\npalette = '#{palette}'\n"
 end
 
+lines = text.lines
+line_break_index = lines.index { |line| line.strip == "[line_break]" }
+
+if line_break_index
+  next_section_offset = lines[(line_break_index + 1)..]&.find_index { |line| line.start_with?("[") }
+  section_end_index = next_section_offset ? (line_break_index + 1 + next_section_offset) : lines.length
+  disabled_index = ((line_break_index + 1)...section_end_index).find do |index|
+    lines[index].match?(/^[ \t]*disabled[ \t]*=/)
+  end
+
+  if disabled_index
+    lines[disabled_index] = "disabled = false\n"
+  else
+    lines.insert(section_end_index, "disabled = false\n")
+  end
+
+  text = lines.join
+else
+  text = "#{text.rstrip}\n\n[line_break]\ndisabled = false\n"
+end
+
 File.write(path, text.end_with?("\n") ? text : "#{text}\n")
 RUBY
 
@@ -278,6 +299,8 @@ text.gsub!(/^[ \t]*font-family[ \t]*=.*\n?/m, "")
 text.gsub!(/^[ \t]*background-opacity[ \t]*=.*\n?/m, "")
 text.gsub!(/^[ \t]*background-blur[ \t]*=.*\n?/m, "")
 text.gsub!(/^[ \t]*keybind[ \t]*=.*toggle_quick_terminal.*\n?/m, "")
+text.gsub!(/^[ \t]*cursor-style[ \t]*=.*\n?/m, "")
+text.gsub!(/^[ \t]*shell-integration-features[ \t]*=.*\n?/m, "")
 text.gsub!(/\n{3,}/, "\n\n")
 text.sub!(/\A\n+/, "")
 text.sub!(/\n+\z/, "")
@@ -288,6 +311,8 @@ block = [
   %{background-opacity = 0.90},
   %{background-blur = true},
   %{keybind = ctrl+`=toggle_quick_terminal},
+  %{cursor-style = block},
+  %{shell-integration-features = no-cursor},
   end_marker
 ].join("\n")
 

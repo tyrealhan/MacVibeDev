@@ -71,6 +71,13 @@ GHOSTTY_FONT="JetBrainsMono Nerd Font"
 - preset: `catppuccin-powerline`
 - flavour: `catppuccin_mocha`
 
+生成 preset 后，还会补上这个设置：
+
+```toml
+[line_break]
+disabled = false
+```
+
 ### Ghostty
 
 只会写入这个文件：
@@ -84,6 +91,8 @@ font-family = JetBrainsMono Nerd Font
 background-opacity = 0.90
 background-blur = true
 keybind = ctrl+`=toggle_quick_terminal
+cursor-style = block
+shell-integration-features = no-cursor
 ```
 
 如果检测到 Ghostty 的旧配置路径，脚本只会提示，不会去改旧文件。
