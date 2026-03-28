@@ -1,4 +1,4 @@
-# macOS Dev Setup
+# macOS Vibe Dev Setup
 
 一个面向 macOS 的一键工作环境配置脚本。
 
@@ -27,6 +27,7 @@ source ~/.zshrc
 - 安装并初始化 Ghostty
 - 安装 JetBrainsMono Nerd Font
 - 安装 Claude Code，并写入代理设置
+- 安装 Codex CLI
 - 统一维护 `~/.zprofile` 和 `~/.zshrc`
 
 ## What It Configures
@@ -126,6 +127,7 @@ shell-integration-features = no-cursor
 - `Ghostty`
 - `font-jetbrains-mono-nerd-font`
 - `claude-code`
+- `codex`
 
 安装策略是：
 
@@ -160,12 +162,14 @@ shell-integration-features = no-cursor
 - 不会在 `~/.zprofile` / `~/.zshrc` 中追加多份相同初始化内容
 - Ghostty 和 Claude Code 配置会按目标键更新
 - Starship 配置会每次重生为同一份 preset
+- 已存在的 `codex` 命令会直接跳过安装
 
 ## Notes
 
 - `~/.config/starship.toml` 会被整文件重写，这是刻意行为。
 - Ghostty 统一使用 `~/.config/ghostty/config.ghostty` 作为目标路径。
 - Claude Code 代理是通过 `~/.claude/settings.json` 的 `env` 字段注入的。
+- Codex 只负责安装命令行工具，本脚本不会额外写入 Codex 配置文件。
 
 ## References
 

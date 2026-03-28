@@ -135,6 +135,17 @@ ensure_claude_code() {
   success "Installed Claude Code"
 }
 
+ensure_codex() {
+  if command -v codex >/dev/null 2>&1; then
+    log "Codex already installed"
+    return 0
+  fi
+
+  log "Installing Codex"
+  "${BREW_BIN}" install codex
+  success "Installed Codex"
+}
+
 update_zprofile() {
   local file="${HOME}/.zprofile"
   local brew_line
@@ -391,6 +402,7 @@ main() {
   ensure_ghostty
   ensure_font
   ensure_claude_code
+  ensure_codex
 
   update_zshrc
   generate_starship_config
