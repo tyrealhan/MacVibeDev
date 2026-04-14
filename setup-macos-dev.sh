@@ -135,6 +135,32 @@ ensure_claude_code() {
   success "Installed Claude Code"
 }
 
+app_bundle_installed() {
+  local app_bundle="$1"
+
+  [ -d "/Applications/${app_bundle}" ] \
+    || [ -d "${HOME}/Applications/${app_bundle}" ] \
+    || {
+      command -v mdfind >/dev/null 2>&1 \
+        && mdfind "kMDItemFSName == '${app_bundle}' && kMDItemContentType == 'com.apple.application-bundle'" | grep -q .
+    }
+}
+
+ensure_cask_app() {
+  local app_name="$1"
+  local cask_name="$2"
+  local app_bundle="$3"
+
+  if app_bundle_installed "$app_bundle"; then
+    log "${app_name} already installed"
+    return 0
+  fi
+
+  log "Installing ${app_name}"
+  "${BREW_BIN}" install --cask "${cask_name}"
+  success "Installed ${app_name}"
+}
+
 ensure_codex() {
   if command -v codex >/dev/null 2>&1; then
     log "Codex already installed"
@@ -403,6 +429,9 @@ main() {
   ensure_font
   ensure_claude_code
   ensure_codex
+  ensure_cask_app "Sublime Text" "sublime-text" "Sublime Text.app"
+  ensure_cask_app "Fork" "fork" "Fork.app"
+  ensure_cask_app "Visual Studio Code" "visual-studio-code" "Visual Studio Code.app"
 
   update_zshrc
   generate_starship_config

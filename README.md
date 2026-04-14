@@ -28,6 +28,7 @@ source ~/.zshrc
 - 安装 JetBrainsMono Nerd Font
 - 安装 Claude Code，并写入代理设置
 - 安装 Codex CLI
+- 安装 Sublime Text、Fork、Visual Studio Code
 - 统一维护 `~/.zprofile` 和 `~/.zshrc`
 
 ## What It Configures
@@ -128,11 +129,20 @@ shell-integration-features = no-cursor
 - `font-jetbrains-mono-nerd-font`
 - `claude-code`
 - `codex`
+- `sublime-text`
+- `fork`
+- `visual-studio-code`
 
 安装策略是：
 
 - 已安装：跳过安装，直接进入配置步骤
 - 未安装：先安装，再配置
+
+对于 GUI 应用，脚本会优先检查：
+
+- `/Applications`
+- `~/Applications`
+- Spotlight 可见的应用索引
 
 ## Files That May Change
 
@@ -159,6 +169,7 @@ shell-integration-features = no-cursor
 这个脚本设计为可重复执行：
 
 - 不会重复安装已经存在的组件
+- 已存在的 GUI 应用会跳过对应的 `brew install --cask`
 - 不会在 `~/.zprofile` / `~/.zshrc` 中追加多份相同初始化内容
 - Ghostty 和 Claude Code 配置会按目标键更新
 - Starship 配置会每次重生为同一份 preset
