@@ -124,15 +124,27 @@ ensure_font() {
   success "Installed JetBrainsMono Nerd Font"
 }
 
-ensure_claude_code() {
+reload_zshrc() {
+  if ! zsh -lc 'source ~/.zshrc' >/dev/null 2>&1; then
+    warn "Failed to reload ~/.zshrc in a new zsh shell. Open a new terminal window or run \`source ~/.zshrc\` manually."
+  fi
+}
+
+install_claude_code_official() {
   if command -v claude >/dev/null 2>&1; then
     log "Claude Code already installed"
     return 0
   fi
 
-  log "Installing Claude Code"
-  "${BREW_BIN}" install --cask claude-code
+  log "Installing Claude Code from the official installer"
+  curl -fsSL https://claude.ai/install.sh | bash
+  reload_zshrc
   success "Installed Claude Code"
+}
+
+finalize_claude_code() {
+  update_claude_settings
+  install_claude_code_official
 }
 
 app_bundle_installed() {
@@ -235,6 +247,7 @@ managed = /(?:^|\n)#{Regexp.escape(start_marker)}\n.*?\n#{Regexp.escape(end_mark
 starship_block = /^[ \t]*if \[\[ "\$TERM_PROGRAM" != "Apple_Terminal" \]\]; then\n[ \t]*eval "\$\(starship init zsh\)"\n[ \t]*fi\n?/m
 
 text.gsub!(managed, "\n")
+text.gsub!(/^[ \t]*export PATH="\$HOME\/\.local\/bin:\$PATH"[ \t]*\n?/m, "")
 text.gsub!(/^[ \t]*eval "\$\(zoxide init zsh\)"[ \t]*\n?/m, "")
 text.gsub!(starship_block, "")
 text.gsub!(/^[ \t]*eval "\$\(starship init zsh\)"[ \t]*\n?/m, "")
@@ -244,6 +257,7 @@ text.sub!(/\n+\z/, "")
 
 block = [
   start_marker,
+  %{export PATH="$HOME/.local/bin:$PATH"},
   %{eval "$(zoxide init zsh)"},
   %{if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then},
   %{  eval "$(starship init zsh)"},
@@ -427,7 +441,6 @@ main() {
   ensure_formula "starship" "starship"
   ensure_ghostty
   ensure_font
-  ensure_claude_code
   ensure_codex
   ensure_cask_app "Sublime Text" "sublime-text" "Sublime Text.app"
   ensure_cask_app "Fork" "fork" "Fork.app"
@@ -437,7 +450,7 @@ main() {
   generate_starship_config
   warn_on_legacy_ghostty_config
   update_ghostty_config
-  update_claude_settings
+  finalize_claude_code
 
   print_summary
 }

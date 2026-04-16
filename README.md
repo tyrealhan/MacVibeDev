@@ -26,9 +26,9 @@ source ~/.zshrc
 - 安装并初始化 Starship
 - 安装并初始化 Ghostty
 - 安装 JetBrainsMono Nerd Font
-- 安装 Claude Code，并写入代理设置
 - 安装 Codex CLI
 - 安装 Sublime Text、Fork、Visual Studio Code
+- 使用 Claude 官方安装脚本安装 Claude Code，并写入代理设置
 - 统一维护 `~/.zprofile` 和 `~/.zshrc`
 
 ## What It Configures
@@ -57,6 +57,7 @@ GHOSTTY_FONT="JetBrainsMono Nerd Font"
 
 `~/.zshrc` 中会写入一个受管 block，包含：
 
+- `export PATH="$HOME/.local/bin:$PATH"`
 - `eval "$(zoxide init zsh)"`
 - 仅在非 Apple Terminal 下启用 Starship
 
@@ -99,25 +100,6 @@ shell-integration-features = no-cursor
 
 如果检测到 Ghostty 的旧配置路径，脚本只会提示，不会去改旧文件。
 
-### Claude Code
-
-会更新：
-
-- `~/.claude/settings.json`
-
-只会确保以下代理环境变量存在：
-
-```json
-{
-  "env": {
-    "HTTP_PROXY": "http://127.0.0.1:7899",
-    "HTTPS_PROXY": "http://127.0.0.1:7899"
-  }
-}
-```
-
-如果 `settings.json` 已经存在，脚本只会 merge `env.HTTP_PROXY` 和 `env.HTTPS_PROXY`，不会覆盖其他字段。
-
 ## Install Targets
 
 脚本会按需安装这些组件：
@@ -127,11 +109,11 @@ shell-integration-features = no-cursor
 - `starship`
 - `Ghostty`
 - `font-jetbrains-mono-nerd-font`
-- `claude-code`
 - `codex`
 - `sublime-text`
 - `fork`
 - `visual-studio-code`
+- `Claude Code`（官方安装脚本）
 
 安装策略是：
 
@@ -162,7 +144,7 @@ shell-integration-features = no-cursor
 - `bash`
 - `curl`
 - `ruby`
-- 网络可访问 Homebrew、GitHub 和相关下载源
+- 网络可访问 Homebrew、GitHub、Claude 和相关下载源
 
 ## Idempotency
 
@@ -174,13 +156,46 @@ shell-integration-features = no-cursor
 - Ghostty 和 Claude Code 配置会按目标键更新
 - Starship 配置会每次重生为同一份 preset
 - 已存在的 `codex` 命令会直接跳过安装
+- 已存在的 `claude` 命令会直接跳过官方安装
 
 ## Notes
 
 - `~/.config/starship.toml` 会被整文件重写，这是刻意行为。
 - Ghostty 统一使用 `~/.config/ghostty/config.ghostty` 作为目标路径。
-- Claude Code 代理是通过 `~/.claude/settings.json` 的 `env` 字段注入的。
 - Codex 只负责安装命令行工具，本脚本不会额外写入 Codex 配置文件。
+
+## Final Step: Claude Code
+
+脚本最后的 Claude 阶段会先更新：
+
+- `~/.claude/settings.json`
+
+只会确保以下代理环境变量存在：
+
+```json
+{
+  "env": {
+    "HTTP_PROXY": "http://127.0.0.1:7899",
+    "HTTPS_PROXY": "http://127.0.0.1:7899"
+  }
+}
+```
+
+如果 `settings.json` 已经存在，脚本只会 merge `env.HTTP_PROXY` 和 `env.HTTPS_PROXY`，不会覆盖其他字段。
+
+然后把 Claude Code 安装作为脚本最后一个安装步骤，执行：
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+安装结束后，脚本会确保 `~/.zshrc` 的受管 block 中存在：
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+然后尝试在新的 `zsh` 进程中重新加载一次 `~/.zshrc`。
 
 ## References
 
